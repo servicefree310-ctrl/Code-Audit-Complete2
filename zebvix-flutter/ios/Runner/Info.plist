@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+	<!-- ═══════════════════════════════════════════
+	     APP IDENTITY
+	═══════════════════════════════════════════ -->
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Zebvix Exchange</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.zebvix.exchange</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>zebvix</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+
+	<!-- ═══════════════════════════════════════════
+	     CAMERA (KYC, QR Code scanning, Profile photo)
+	═══════════════════════════════════════════ -->
+	<key>NSCameraUsageDescription</key>
+	<string>Zebvix needs camera access for QR code scanning, KYC document verification, and profile photo upload.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     PHOTO LIBRARY (Upload KYC docs, receipts, avatar)
+	═══════════════════════════════════════════ -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Zebvix needs photo library access to upload identity documents, receipts, and profile pictures.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Zebvix needs permission to save QR codes, transaction receipts and screenshots to your photo library.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     FACE ID / TOUCH ID (Biometric login)
+	═══════════════════════════════════════════ -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Zebvix uses Face ID to securely authenticate you for login and transaction confirmation.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     MICROPHONE (Voice support in P2P chat)
+	═══════════════════════════════════════════ -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Zebvix needs microphone access for voice messages in P2P trading chat.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     LOCATION (Geo-restriction check, fraud detection)
+	═══════════════════════════════════════════ -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Zebvix uses your location to comply with regional trading regulations and enhance security.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Zebvix uses your location in the background to detect suspicious login activity and ensure compliance.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Zebvix needs background location access for enhanced account security monitoring.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     CONTACTS (P2P / Fiat: send to phone contacts)
+	═══════════════════════════════════════════ -->
+	<key>NSContactsUsageDescription</key>
+	<string>Zebvix accesses contacts so you can quickly send crypto to people in your address book.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     NOTIFICATIONS (Price alerts, order fills, deposits)
+	═══════════════════════════════════════════ -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+		<string>processing</string>
+	</array>
+
+	<!-- ═══════════════════════════════════════════
+	     CALENDAR (Trading schedule reminders)
+	═══════════════════════════════════════════ -->
+	<key>NSCalendarsUsageDescription</key>
+	<string>Zebvix can add trading events and reminders to your calendar.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Zebvix needs calendar write access to save trading schedule reminders.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Zebvix needs reminders access to schedule price alerts and trading notifications.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     TRACKING (Analytics, referral attribution)
+	═══════════════════════════════════════════ -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Zebvix uses tracking to attribute referrals, personalize offers, and improve app analytics.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     MOTION (Shake-to-refresh, gesture detection)
+	═══════════════════════════════════════════ -->
+	<key>NSMotionUsageDescription</key>
+	<string>Zebvix uses motion sensors for gesture-based navigation and shake-to-refresh features.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     SIRI / SHORTCUTS
+	═══════════════════════════════════════════ -->
+	<key>NSSiriUsageDescription</key>
+	<string>Zebvix uses Siri shortcuts for quick price checks and portfolio overview.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     FILE ACCESS (Document upload for KYC, support)
+	═══════════════════════════════════════════ -->
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+
+	<!-- ═══════════════════════════════════════════
+	     NFC (Optional: hardware wallet support)
+	═══════════════════════════════════════════ -->
+	<key>NFCReaderUsageDescription</key>
+	<string>Zebvix can read NFC tags for hardware wallet and identity verification support.</string>
+
+	<!-- ═══════════════════════════════════════════
+	     NETWORK / ATS (App Transport Security)
+	═══════════════════════════════════════════ -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>zebvix.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<false/>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.2</string>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<true/>
+				<key>NSRequiresCertificateTransparency</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+
+	<!-- ═══════════════════════════════════════════
+	     DEEP LINKING (Universal Links)
+	═══════════════════════════════════════════ -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.zebvix.exchange</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>zebvix</string>
+				<string>com.zebvix.exchange</string>
+			</array>
+		</dict>
+		<!-- Google Sign-In -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>google-sign-in</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.YOUR_REVERSED_CLIENT_ID</string>
+			</array>
+		</dict>
+	</array>
+
+	<!-- ═══════════════════════════════════════════
+	     QUERIED SCHEMES (URL can-open checks)
+	═══════════════════════════════════════════ -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+		<string>zebvix</string>
+		<string>whatsapp</string>
+		<string>telegram</string>
+		<string>googlegmail</string>
+		<string>googlechrome</string>
+		<string>facetime</string>
+	</array>
+
+	<!-- ═══════════════════════════════════════════
+	     UI CONFIGURATION
+	═══════════════════════════════════════════ -->
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+
+	<!-- ═══════════════════════════════════════════
+	     APPLE SIGN IN
+	═══════════════════════════════════════════ -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+
+	<!-- Flutter -->
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+</dict>
+</plist>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CERTIFICATE PINNING SETUP:
+  ════════════════════════════════════════════════════════
+  FIX: Replace the placeholder SHA-256 hashes below with your real
+  certificate fingerprints before releasing to production.
+
+  How to get your cert hashes (run on server):
+    openssl s_client -connect zebvix.com:443 < /dev/null 2>/dev/null \
+      | openssl x509 -pubkey -noout \
+      | openssl pkey -pubin -outform DER \
+      | openssl dgst -sha256 -binary \
+      | openssl enc -base64
+
+  Always pin at least 2 hashes (primary + backup/CA) so you can
+  rotate certificates without locking out users.
+
+  IMPORTANT: Update expiration date when you renew the cert.
+  ════════════════════════════════════════════════════════
+-->
+<network-security-config>
+    <!-- Production: strict HTTPS only for zebvix.com -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">zebvix.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+        <!--
+        REPLACE BEFORE RELEASE: Add your actual SHA-256 certificate pin hashes here.
+        Example (do NOT use these dummy values in production):
+        <pin-set expiration="2027-06-01">
+            <pin digest="SHA-256">YOUR_PRIMARY_CERT_SHA256_BASE64_HERE=</pin>
+            <pin digest="SHA-256">YOUR_BACKUP_CERT_SHA256_BASE64_HERE=</pin>
+        </pin-set>
+        -->
+    </domain-config>
+
+    <!-- WebSocket / streaming endpoints -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">ws.zebvix.com</domain>
+        <domain includeSubdomains="true">stream.zebvix.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Firebase, Google, CDN -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">firebase.com</domain>
+        <domain includeSubdomains="true">firebaseio.com</domain>
+        <domain includeSubdomains="true">gstatic.com</domain>
+        <domain includeSubdomains="true">cloudflare.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Base config: trust system CA, no cleartext allowed globally -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

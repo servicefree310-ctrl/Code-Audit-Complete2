@@ -1,0 +1,221 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ═══════════════════════════════════════════
+         NETWORK PERMISSIONS
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- FIX: Removed CHANGE_NETWORK_STATE and CHANGE_WIFI_STATE — not used by the app -->
+
+    <!-- ═══════════════════════════════════════════
+         CAMERA & BIOMETRICS (KYC, QR Scan, Face ID)
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <!-- ═══════════════════════════════════════════
+         STORAGE (Document upload, Image picker, Receipts)
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- FIX: Removed READ_MEDIA_VIDEO, READ_MEDIA_AUDIO — no video/audio feature in app -->
+    <!-- FIX: Removed MANAGE_EXTERNAL_STORAGE — Play Store high-risk permission, not needed -->
+
+    <!-- ═══════════════════════════════════════════
+         NOTIFICATIONS (Push alerts: price, deposits, orders)
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- ═══════════════════════════════════════════
+         LOCATION (Geo-restriction checks, fraud detection)
+         Request at runtime only — not background
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- FIX: Removed ACCESS_BACKGROUND_LOCATION — Play Store requires justification,
+         causes review delays; foreground location is sufficient for fraud checks -->
+
+    <!-- ═══════════════════════════════════════════
+         PHONE & DEVICE INFO (Device fingerprint for 2FA)
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- FIX: Removed READ_PHONE_NUMBERS — not used -->
+    <!-- FIX: Removed CALL_PHONE — no calling feature in app -->
+
+    <!-- ═══════════════════════════════════════════
+         SMS (OTP auto-read via SMS Retriever API only)
+         FIX: Removed RECEIVE_SMS, READ_SMS, SEND_SMS.
+         These trigger Google Play policy review and are not needed.
+         Use SMS Retriever API instead (no permissions required).
+    ═══════════════════════════════════════════ -->
+
+    <!-- ═══════════════════════════════════════════
+         CONTACTS (P2P: send to saved contacts)
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- FIX: Removed WRITE_CONTACTS — app only reads contacts, never writes them -->
+
+    <!-- FIX: Removed READ_CALENDAR, WRITE_CALENDAR — no calendar feature in app -->
+
+    <!-- ═══════════════════════════════════════════
+         FLASHLIGHT (QR scanner torch)
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+
+    <!-- ═══════════════════════════════════════════
+         FOREGROUND SERVICE (WebSocket / background sync)
+    ═══════════════════════════════════════════ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- FIX: Removed REQUEST_INSTALL_PACKAGES — extremely dangerous, causes Play Store rejection -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- ═══════════════════════════════════════════
+         HARDWARE FEATURE DECLARATIONS
+    ═══════════════════════════════════════════ -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.fingerprint"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.biometrics"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false" />
+
+    <application
+        android:label="Zebvix Exchange"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:enableOnBackInvokedCallback="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="false"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:supportsRtl="true"
+        android:theme="@style/LaunchTheme">
+
+        <meta-data
+            android:name="io.flutter.embedding.android.NormalTheme"
+            android:resource="@style/NormalTheme" />
+
+        <!-- Firebase Cloud Messaging -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_color" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="zebvix_high_importance" />
+
+        <!-- Google Sign-In -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Deep linking -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="zebvix.com" />
+                <data android:scheme="https" android:host="www.zebvix.com" />
+            </intent-filter>
+
+            <!-- Custom scheme deep links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="zebvix" />
+            </intent-filter>
+        </activity>
+
+        <!-- Firebase Messaging Service -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter android:priority="100">
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Boot receiver for scheduled price alerts -->
+        <receiver
+            android:name=".receivers.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- File provider for document/image sharing -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Queries for installed apps (deep link verification) -->
+        <queries>
+            <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="https" />
+            </intent>
+            <intent>
+                <action android:name="android.intent.action.SEND" />
+                <data android:mimeType="*/*" />
+            </intent>
+            <package android:name="com.google.android.gms" />
+        </queries>
+
+    </application>
+
+</manifest>

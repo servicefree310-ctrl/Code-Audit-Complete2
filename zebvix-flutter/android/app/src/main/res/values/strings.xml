@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Zebvix Exchange</string>
+    <string name="notification_channel_name">Zebvix Alerts</string>
+    <string name="notification_channel_description">Price alerts, order fills, deposit and withdrawal notifications</string>
+</resources>
