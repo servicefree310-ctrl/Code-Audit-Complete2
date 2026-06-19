@@ -1,0 +1,2 @@
+- [Zebvix API response shapes](zebvix-api-shapes.md) — live backend shapes confirmed via curl; key mismatches fixed in providers/screens.
+- [Zebvix Flutter web setup](zebvix-flutter-setup.md) — app runs via "Zebvix Flutter Web" workflow on port 5000; no --web-renderer flag (Flutter 3.32).

@@ -36,9 +36,10 @@ class MarketsNotifier extends StateNotifier<MarketsState> {
       },
     );
     final data = response.data;
+    // API returns {"markets": [...], "count": N, "ts": N}
     if (data is List) return data.cast<Map<String, dynamic>>();
-    if (data is Map && data['data'] is List) {
-      return (data['data'] as List).cast<Map<String, dynamic>>();
+    if (data is Map && data['markets'] is List) {
+      return (data['markets'] as List).cast<Map<String, dynamic>>();
     }
     return [];
   }

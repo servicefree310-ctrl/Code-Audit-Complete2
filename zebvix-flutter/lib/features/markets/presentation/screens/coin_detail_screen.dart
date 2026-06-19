@@ -46,8 +46,12 @@ class _CoinDetailScreenState extends ConsumerState<CoinDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final price = (_coinData?['price'] as num?)?.toDouble() ?? 0;
-    final change = (_coinData?['changePercent'] as num?)?.toDouble() ?? 0;
+    // API returns 'currentPrice' as a string and 'priceUsd' as double
+    final price = double.tryParse(_coinData?['currentPrice']?.toString() ?? '')
+        ?? (_coinData?['priceUsd'] as num?)?.toDouble()
+        ?? 0.0;
+    // API returns 'change24h', not 'changePercent'
+    final change = (_coinData?['change24h'] as num?)?.toDouble() ?? 0;
 
     return Scaffold(
       backgroundColor: AppColors.background,

@@ -176,13 +176,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  // Resend OTP — called when user taps "Resend Code" on OTP screen
+  Future<bool> resendOtp({required String email, required String type}) async {
+    try {
+      final dio = _ref.read(dioProvider);
+      await dio.post(AppConstants.otpSendPath, data: {
+        'channel': 'email',
+        'purpose': type,
+        'recipient': email,
+      });
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Forgot password — sends OTP to email for password reset flow
   Future<bool> forgotPassword(String email) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final dio = _ref.read(dioProvider);
       await dio.post(AppConstants.otpSendPath, data: {
         'channel': 'email',
-        'purpose': 'login',
+        'purpose': 'password_reset',
         'recipient': email,
       });
       state = state.copyWith(isLoading: false);

@@ -48,16 +48,36 @@ class _SpotTradingScreenState extends ConsumerState<SpotTradingScreen>
     try {
       final dio = ref.read(dioProvider);
       final results = await Future.wait([
-        dio.get('${AppConstants.tickerPath}/${widget.pair}').catchError((_) => null),
-        dio.get('${AppConstants.orderBookPath}/${widget.pair}').catchError((_) => null),
-        dio.get('${AppConstants.spotOpenOrdersPath}?symbol=${widget.pair}').catchError((_) => null),
-        dio.get('${AppConstants.walletBalancePath}?coin=USDT').catchError((_) => null),
+        // Ticker: /v1/ticker/:symbol does not exist — use markets search instead
+        dio.get(AppConstants.marketsPath, queryParameters: {'search': widget.pair, 'limit': 1})
+            .catchError((_) => null),
+        // Orderbook: uses query param ?symbol=, NOT path param /symbol
+        dio.get(AppConstants.orderBookPath, queryParameters: {'symbol': widget.pair, 'limit': 10})
+            .catchError((_) => null),
+        dio.get(AppConstants.spotOpenOrdersPath, queryParameters: {'symbol': widget.pair})
+            .catchError((_) => null),
+        dio.get(AppConstants.walletBalancePath, queryParameters: {'coin': 'USDT'})
+            .catchError((_) => null),
       ]);
 
       setState(() {
-        _ticker = results[0]?.data as Map<String, dynamic>?;
+        // Markets search returns {"markets": [...]} — normalize first item
+        // to include 'price' and 'changePercent' keys the UI expects
+        final marketData = results[0]?.data as Map<String, dynamic>?;
+        final market = (marketData?['markets'] as List?)
+            ?.cast<Map<String, dynamic>?>()
+            .whereType<Map<String, dynamic>>()
+            .where((m) => m['symbol'] == widget.pair)
+            .firstOrNull;
+        if (market != null) {
+          _ticker = {
+            ...market,
+            'price': market['lastPrice'],           // normalize: lastPrice → price
+            'changePercent': market['change24h'],    // normalize: change24h → changePercent
+          };
+        }
 
-        // FIX: Parse real order book from API response
+        // Orderbook: {"symbol","bids":[{price,qty}],"asks":[{price,qty}]}
         final obData = results[1]?.data;
         if (obData is Map<String, dynamic>) {
           final rawAsks = obData['asks'] as List?;

@@ -23,6 +23,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   String _otp = '';
   int _countdown = 60;
   Timer? _timer;
+  bool _isSendingResend = false;
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       if (_countdown == 0) {
         t.cancel();
       } else {
-        setState(() => _countdown--);
+        if (mounted) setState(() => _countdown--);
       }
     });
   }
@@ -59,6 +60,21 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     );
     if (success && mounted) {
       context.go('/home');
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    if (_isSendingResend) return;
+    setState(() => _isSendingResend = true);
+    final notifier = ref.read(authProvider.notifier);
+    final sent = await notifier.resendOtp(email: widget.email, type: widget.type);
+    if (mounted) {
+      setState(() => _isSendingResend = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(sent ? 'Code resent to ${widget.email}' : 'Failed to resend. Please try again.'),
+        backgroundColor: sent ? AppColors.bullish : AppColors.error,
+      ));
+      if (sent) _startTimer();
     }
   }
 
@@ -136,10 +152,15 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               child: _countdown > 0
                   ? Text('Resend code in ${_countdown}s',
                       style: AppTextStyles.body.copyWith(color: AppColors.textSecondary))
-                  : TextButton(
-                      onPressed: _startTimer,
-                      child: Text('Resend Code', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.primary)),
-                    ),
+                  : _isSendingResend
+                      ? const SizedBox(
+                          height: 24, width: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                        )
+                      : TextButton(
+                          onPressed: _resendOtp,
+                          child: Text('Resend Code', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.primary)),
+                        ),
             ),
           ],
         ),

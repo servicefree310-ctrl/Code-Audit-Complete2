@@ -48,7 +48,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       referralCode: _referralCtrl.text.trim().isEmpty ? null : _referralCtrl.text.trim(),
     );
     if (success && mounted) {
-      context.push('/auth/otp', extra: {'email': _emailCtrl.text.trim(), 'type': 'email'});
+      // If backend returned a direct session token, user is already logged in
+      // → go straight to home. If 202 challenge (OTP required) → go to OTP screen.
+      if (ref.read(authProvider).isLoggedIn) {
+        context.go('/home');
+      } else {
+        context.push('/auth/otp', extra: {'email': _emailCtrl.text.trim(), 'type': 'email'});
+      }
     }
   }
 
