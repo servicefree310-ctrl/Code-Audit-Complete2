@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,30 +13,40 @@ import 'core/performance/performance_config.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ── 1. Lock orientation (portrait only) ─────────────────
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // ── 1. Lock orientation (portrait only) — mobile only ────
+  if (!kIsWeb) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
-  // ── 2. Status bar & nav bar styling ─────────────────────
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF0B0E11),
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+    // ── 2. Status bar & nav bar styling ─────────────────────
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFF0B0E11),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
+  }
 
-  // ── 3. Firebase (push notifications, analytics) ──────────
-  // FIX: Firebase.initializeApp() was missing — FCM would crash at runtime.
-  // Add google-services.json (Android) and GoogleService-Info.plist (iOS) to project.
-  await Firebase.initializeApp();
+  // ── 3. Firebase ───────────────────────────────────────────
+  // Web: skipped — no firebase config yet (add FirebaseOptions for web later).
+  // Mobile: add google-services.json (Android) / GoogleService-Info.plist (iOS).
+  if (!kIsWeb) {
+    try {
+      await Firebase.initializeApp();
+    } catch (e) {
+      debugPrint('Firebase init skipped: $e');
+    }
+  }
 
   // ── 4. Performance configuration ─────────────────────────
   await PerformanceConfig.initialize();
 
-  // ── 5. Memory pressure handler ────────────────────────────
-  MemoryManager().init();
+  // ── 5. Memory pressure handler — mobile only ──────────────
+  if (!kIsWeb) {
+    MemoryManager().init();
+  }
 
   // ── 6. Hive offline cache ─────────────────────────────────
   await Hive.initFlutter();
@@ -69,17 +80,11 @@ class ZebvixApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
       routerConfig: router,
-
-      // ── Smooth scroll behaviour (no Android glow) ────────
       scrollBehavior: const SmoothScrollBehavior(),
-
       builder: (context, child) {
         return MediaQuery(
-          // Prevent text scaling from system settings (crypto amounts must stay precise)
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-          child: AppLockWrapper(
-            child: child!,
-          ),
+          child: AppLockWrapper(child: child!),
         );
       },
     );

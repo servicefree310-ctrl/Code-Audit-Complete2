@@ -4,27 +4,71 @@ part 'app_exception.freezed.dart';
 
 @freezed
 class AppException with _$AppException implements Exception {
-  const factory AppException.network(String message) = NetworkException;
-  const factory AppException.unauthorized(String message) = UnauthorizedException;
-  const factory AppException.forbidden(String message) = ForbiddenException;
-  const factory AppException.notFound(String message) = NotFoundException;
-  const factory AppException.badRequest(String message) = BadRequestException;
-  const factory AppException.validation(String message, [dynamic errors]) = ValidationException;
-  const factory AppException.tooManyRequests(String message) = TooManyRequestsException;
-  const factory AppException.server(String message) = ServerException;
-  const factory AppException.unknown(String message) = UnknownException;
+  const factory AppException.network({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _NetworkException;
+
+  const factory AppException.server({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _ServerException;
+
+  const factory AppException.unauthorized({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _UnauthorizedException;
+
+  const factory AppException.forbidden({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _ForbiddenException;
+
+  const factory AppException.notFound({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _NotFoundException;
+
+  const factory AppException.validation({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _ValidationException;
+
+  const factory AppException.timeout({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _TimeoutException;
+
+  const factory AppException.cancelled({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _CancelledException;
+
+  const factory AppException.unknown({
+    required String message,
+    int? statusCode,
+    String? errorCode,
+  }) = _UnknownException;
 
   const AppException._();
 
   String get userMessage => when(
-    network: (m) => m,
-    unauthorized: (m) => m,
-    forbidden: (m) => m,
-    notFound: (m) => m,
-    badRequest: (m) => m,
-    validation: (m, _) => m,
-    tooManyRequests: (m) => m,
-    server: (m) => m,
-    unknown: (m) => m,
-  );
+        network: (m, s, e) => m,
+        server: (m, s, e) => m,
+        unauthorized: (m, s, e) => m,
+        forbidden: (m, s, e) => m,
+        notFound: (m, s, e) => m,
+        validation: (m, s, e) => m,
+        timeout: (m, s, e) => m,
+        cancelled: (m, s, e) => m,
+        unknown: (m, s, e) => m,
+      );
 }

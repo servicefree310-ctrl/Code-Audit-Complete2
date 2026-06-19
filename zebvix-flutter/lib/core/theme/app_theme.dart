@@ -60,7 +60,7 @@ class AppTheme {
           return AppTextStyles.caption.copyWith(color: AppColors.textSecondary);
         }),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -126,7 +126,7 @@ class AppTheme {
         side: const BorderSide(color: AppColors.borderColor),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.textSecondary,
         labelStyle: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
@@ -162,7 +162,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         titleTextStyle: AppTextStyles.h4.copyWith(color: AppColors.textPrimary),
