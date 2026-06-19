@@ -9,7 +9,7 @@ import 'interceptors/error_interceptor.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(
-    baseUrl: AppConstants.baseUrl,
+    baseUrl: AppConstants.apiBaseUrl,
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 30),
     sendTimeout: const Duration(seconds: 30),

@@ -11,21 +11,20 @@ class SecureStorage {
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
 
+  // Backend uses 14-day server-side sessions — one token, no refresh flow.
+  // "refreshToken" param is accepted for API compatibility but ignored (stored as empty).
   Future<void> saveTokens({
     required String accessToken,
-    required String refreshToken,
+    String refreshToken = '',
   }) async {
-    await Future.wait([
-      _storage.write(key: AppConstants.accessTokenKey, value: accessToken),
-      _storage.write(key: AppConstants.refreshTokenKey, value: refreshToken),
-    ]);
+    await _storage.write(key: AppConstants.accessTokenKey, value: accessToken);
   }
 
   Future<String?> getAccessToken() =>
       _storage.read(key: AppConstants.accessTokenKey);
 
-  Future<String?> getRefreshToken() =>
-      _storage.read(key: AppConstants.refreshTokenKey);
+  // Always returns null — backend has no refresh token endpoint.
+  Future<String?> getRefreshToken() async => null;
 
   Future<void> saveUserData(Map<String, dynamic> userData) =>
       _storage.write(key: AppConstants.userDataKey, value: jsonEncode(userData));
