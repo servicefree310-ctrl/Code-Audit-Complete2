@@ -37,6 +37,35 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   AuthNotifier(this._ref) : super(const AuthState());
 
+  // Called by SplashScreen on startup — validates stored token against backend.
+  // Sets isLoggedIn=true if valid, clears storage and sets false if invalid/missing.
+  Future<void> initialize() async {
+    final storage = _ref.read(secureStorageProvider);
+    final token = await storage.getAccessToken();
+    if (token == null || token.isEmpty) {
+      state = const AuthState(isLoggedIn: false);
+      return;
+    }
+    // Token exists in storage — verify it's still valid with the backend
+    try {
+      final dio = _ref.read(dioProvider);
+      final response = await dio.get(AppConstants.profilePath);
+      final user = response.data as Map<String, dynamic>?;
+      state = AuthState(isLoggedIn: true, user: user);
+    } catch (_) {
+      // Token rejected by backend (expired / revoked) — clear it
+      await storage.clearAll();
+      state = const AuthState(isLoggedIn: false);
+    }
+  }
+
+  // Called by AuthInterceptor when a 401 is received mid-session.
+  // Updates in-memory state so the router's refreshListenable fires
+  // and automatically redirects the user back to /auth/login.
+  void onSessionExpired() {
+    state = const AuthState(isLoggedIn: false);
+  }
+
   // Backend returns { user, token } — "token" is the 14-day session token
   // used as a Bearer token in Authorization header for mobile clients.
   Future<bool> login({required String email, required String password}) async {
@@ -70,10 +99,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(isLoading: false, error: 'Login failed. Please try again.');
       return false;
     } catch (e) {
-      final msg = e.toString().contains('AppException')
-          ? e.toString()
-          : 'Invalid credentials. Please try again.';
-      state = state.copyWith(isLoading: false, error: msg);
+      state = state.copyWith(isLoading: false, error: 'Invalid credentials. Please try again.');
       return false;
     }
   }
@@ -100,8 +126,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       final data = response.data as Map<String, dynamic>;
 
-      // If OTP policy is on, server returns 202 + challenge — registration
-      // succeeded but needs OTP verification before session is created
+      // 202 + challenge — OTP verification required before session is created
       if (response.statusCode == 202 && data['challenge'] != null) {
         state = state.copyWith(isLoading: false);
         return true;
@@ -121,40 +146,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: 'Registration failed. Please try again.');
-      return false;
-    }
-  }
-
-  // Complete MFA challenge after login/register — sends verified OTP IDs
-  Future<bool> verifyLoginChallenge({
-    required String challengeToken,
-    int? emailOtpId,
-    int? phoneOtpId,
-    int? twoFaOtpId,
-  }) async {
-    state = state.copyWith(isLoading: true, clearError: true);
-    try {
-      final dio = _ref.read(dioProvider);
-      final response = await dio.post(AppConstants.loginVerifyPath, data: {
-        'challengeToken': challengeToken,
-        if (emailOtpId != null) 'emailOtpId': emailOtpId,
-        if (phoneOtpId != null) 'phoneOtpId': phoneOtpId,
-        if (twoFaOtpId != null) 'twoFaOtpId': twoFaOtpId,
-      });
-      final data = response.data as Map<String, dynamic>;
-      final token = data['token'] as String?;
-      final user = data['user'] as Map<String, dynamic>?;
-      if (token != null) {
-        final storage = _ref.read(secureStorageProvider);
-        await storage.saveTokens(accessToken: token, refreshToken: '');
-        if (user != null) await storage.saveUserData(user);
-        state = state.copyWith(isLoading: false, isLoggedIn: true, user: user);
-        return true;
-      }
-      state = state.copyWith(isLoading: false, error: 'Verification failed.');
-      return false;
-    } catch (e) {
-      state = state.copyWith(isLoading: false, error: 'Invalid OTP. Please try again.');
       return false;
     }
   }
@@ -210,9 +201,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<bool> resetPassword({required String token, required String password}) async {
-    // Backend does not expose a standalone reset-password endpoint in the
-    // current version. Password change is done via /security/me while logged in.
-    // This is a placeholder for future implementation.
     state = state.copyWith(
       isLoading: false,
       error: 'Password reset via email link is not supported yet. Please contact support.',
@@ -227,7 +215,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {}
     final storage = _ref.read(secureStorageProvider);
     await storage.clearAll();
-    state = const AuthState();
+    state = const AuthState(isLoggedIn: false);
   }
 }
 

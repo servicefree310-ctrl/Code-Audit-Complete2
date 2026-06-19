@@ -38,15 +38,34 @@ import '../../features/auto_invest/presentation/screens/auto_invest_screen.dart'
 import '../../features/copy_trading/presentation/screens/copy_trading_screen.dart';
 import '../../features/fiat/presentation/screens/fiat_screen.dart';
 import '../../features/fiat/presentation/screens/bank_screen.dart';
-import '../storage/secure_storage.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
+
+// Simple ChangeNotifier that lets the router know auth state changed.
+// Notified by ref.listen on authProvider inside routerProvider.
+class _AuthRefreshNotifier extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final secureStorage = ref.read(secureStorageProvider);
+  final authRefresh = _AuthRefreshNotifier();
+
+  // Watch authProvider — whenever isLoggedIn changes, tell the router
+  // to re-evaluate its redirect so the user is sent to /auth/login
+  // (e.g. after a 401 mid-session or after logout).
+  ref.listen<AuthState>(authProvider, (prev, next) {
+    if (prev?.isLoggedIn != next.isLoggedIn) {
+      authRefresh.refresh();
+    }
+  });
+
+  ref.onDispose(authRefresh.dispose);
 
   return GoRouter(
     initialLocation: '/splash',
-    redirect: (context, state) async {
-      final isLoggedIn = await secureStorage.isLoggedIn();
+    refreshListenable: authRefresh,
+    redirect: (context, state) {
+      // Use in-memory auth state (set by initialize() on startup)
+      final isLoggedIn = ref.read(authProvider).isLoggedIn;
       final isAuthRoute = state.matchedLocation.startsWith('/auth') ||
           state.matchedLocation == '/splash';
 
@@ -93,7 +112,6 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Main app shell with floating dock
       // Dock tabs: Home | Markets | [Trade+] | Wallet | Profile
-      // Earn is accessible via push from home quick actions (outside shell)
       ShellRoute(
         builder: (ctx, state, child) => MainShell(child: child),
         routes: [

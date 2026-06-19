@@ -20,9 +20,10 @@ final dioProvider = Provider<Dio>((ref) {
   ));
 
   dio.interceptors.addAll([
-    AuthInterceptor(ref.read(secureStorageProvider), dio),
+    // Pass ref so AuthInterceptor can update authProvider on 401
+    AuthInterceptor(ref.read(secureStorageProvider), dio, ref),
     ErrorInterceptor(),
-    // FIX: Only log in debug/profile — prevents token & request body leak in production
+    // Only log in debug/profile — prevents token & request body leak in production
     if (!kReleaseMode)
       PrettyDioLogger(
         requestHeader: true,

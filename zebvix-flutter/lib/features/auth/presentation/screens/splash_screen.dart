@@ -7,6 +7,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/storage/secure_storage.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/widgets/zeb_logo.dart';
+import '../providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -75,11 +76,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    final storage = ref.read(secureStorageProvider);
-    final isLoggedIn = await storage.isLoggedIn();
+    // initialize() validates the stored token against GET /auth/me.
+    // If the token is missing or the backend rejects it (expired/revoked),
+    // it clears storage and sets isLoggedIn=false. The router's
+    // refreshListenable will then redirect to /auth/login automatically.
+    await ref.read(authProvider.notifier).initialize();
     if (!mounted) return;
+    final isLoggedIn = ref.read(authProvider).isLoggedIn;
     if (isLoggedIn) {
+      final storage = ref.read(secureStorageProvider);
       final pin = await storage.getPin();
+      if (!mounted) return;
       context.go(pin != null ? '/auth/pin' : '/home');
     } else {
       context.go('/auth/login');
