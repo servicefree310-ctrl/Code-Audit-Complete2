@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "OlKm-SiVjjCAXBKft5Kho"
+uri = "file://audit-reports/zebvix-full-audit-report.md"
+type = "text"
+title = "Zebvix Full Audit Report — Flutter + Backend API"
